@@ -182,14 +182,35 @@ See `.env.example` for all available configuration options.
 
 ## 🚀 Deployment
 
+### Render Deployment
+
+This app is ready to deploy on Render with the included `render.yaml` configuration.
+
+#### Quick Deploy to Render:
+1. **Connect GitHub**: Link your GitHub repository to Render
+2. **Create Web Service**: Use the `render.yaml` file for automatic configuration
+3. **Set Environment Variables**:
+   - `NODE_ENV`: production
+   - `PORT`: 10000 (auto-set by Render)
+   - `SESSION_SECRET`: Generate secure string
+   - `JWT_SECRET`: Generate secure string
+   - Database credentials for MySQL, MongoDB, Redis, Neo4j
+
+#### Manual Render Setup:
+1. Fork/clone this repository
+2. Create new Web Service on Render
+3. Connect your repository
+4. Build Command: `npm install`
+5. Start Command: `npm start`
+6. Set environment variables in Render dashboard
+
 ### Production Checklist
 - [ ] Set `NODE_ENV=production`
 - [ ] Configure production databases
 - [ ] Set strong JWT secrets
-- [ ] Enable SSL/HTTPS
-- [ ] Configure reverse proxy (nginx)
-- [ ] Setup monitoring and logging
+- [ ] Enable SSL/HTTPS (auto-enabled on Render)
 - [ ] Configure backup strategies
+- [ ] Setup monitoring and logging
 
 ### Docker Deployment
 ```bash

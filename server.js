@@ -191,6 +191,16 @@ app.get('/reset-password', (req, res) => {
   res.sendFile(path.join(__dirname, 'src/views/pages/reset-password.html'));
 });
 
+// Health check endpoint for monitoring
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: require('./package.json').version
+  });
+});
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Page not found' });

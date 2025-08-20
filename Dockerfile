@@ -38,11 +38,11 @@ RUN mkdir -p /app/uploads /app/logs /app/temp && \
 USER cown1
 
 # Expose port
-EXPOSE 3000
+EXPOSE 10000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node healthcheck.js || exit 1
+    CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 10000) + '/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
 
 # Start application
 CMD ["npm", "start"]
