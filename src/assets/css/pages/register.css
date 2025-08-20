@@ -23,6 +23,32 @@ body {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(0, 191, 255, 0.3);
+    padding: 2rem;
+}
+
+/* Scrollbar for Register Form */
+#register-form {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 12px;
+}
+
+#register-form::-webkit-scrollbar {
+    width: 6px;
+}
+
+#register-form::-webkit-scrollbar-track {
+    background: rgba(0, 191, 255, 0.1);
+    border-radius: 10px;
+}
+
+#register-form::-webkit-scrollbar-thumb {
+    background: #00BFFF;
+    border-radius: 10px;
+}
+
+#register-form::-webkit-scrollbar-thumb:hover {
+    background: #60A5FA;
 }
 
 /* Styling for form inputs and custom select trigger */
@@ -32,6 +58,7 @@ body {
     transition: all 0.3s ease;
     color: white;
     box-shadow: inset 0 0 8px rgba(0, 191, 255, 0.15);
+    margin-bottom: 0.5rem;
 }
 
 /* Custom select dropdown arrow */
@@ -109,4 +136,40 @@ body {
 
 .form-link:hover {
     color: #93C5FD;
+}
+
+/* Additional spacing classes for better form layout */
+.form-section {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    margin-bottom: 0.75rem;
+    display: block;
+    font-size: 0.875rem;
+    color: #9CA3AF;
+}
+
+.form-row {
+    margin-bottom: 1.25rem;
+}
+
+.form-submit-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+}
+
+/* Responsive spacing adjustments */
+@media (max-width: 640px) {
+    .form-container {
+        padding: 1.5rem;
+    }
+    
+    .form-section {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-row {
+        margin-bottom: 1rem;
+    }
 }

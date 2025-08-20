@@ -151,6 +151,80 @@ const GalaxyIcon = () => (
 
 // Main App Component
 const App = () => {
+    const [formData, setFormData] = React.useState({
+        password: '',
+        confirmPassword: ''
+    });
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [error, setError] = React.useState('');
+    const [success, setSuccess] = React.useState('');
+
+    const handleInputChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+        setError(''); // Clear error when user types
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            if (!formData.password || !formData.confirmPassword) {
+                throw new Error('Vui lòng điền đầy đủ thông tin');
+            }
+
+            if (formData.password !== formData.confirmPassword) {
+                throw new Error('Mật khẩu xác nhận không khớp');
+            }
+
+            if (formData.password.length < 8) {
+                throw new Error('Mật khẩu phải có ít nhất 8 ký tự');
+            }
+
+            // Get token from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (!token) {
+                throw new Error('Token không hợp lệ hoặc đã hết hạn');
+            }
+
+            // Send reset password request
+            const response = await fetch('/api/auth/reset-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-MTProto-Encrypted': 'true'
+                },
+                body: JSON.stringify({
+                    token,
+                    password: formData.password
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Có lỗi xảy ra');
+            }
+
+            setSuccess('Mật khẩu đã được đặt lại thành công! Đang chuyển hướng...');
+            
+            // Redirect to login after successful reset
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 2000);
+
+        } catch (error) {
+            console.error('Reset password error:', error);
+            setError(error.message || 'Có lỗi xảy ra trong quá trình đặt lại mật khẩu');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <>
             <ThreeScene />
@@ -160,13 +234,53 @@ const App = () => {
                     <h1 className="text-3xl font-bold text-white">Tạo Mật Khẩu Mới</h1>
                     <p className="text-gray-300">Bảo mật tài khoản của bạn là ưu tiên hàng đầu</p>
                 </div>
-                <div className="w-full space-y-6">
+                
+                <form onSubmit={handleSubmit} className="w-full space-y-6">
+                    {error && (
+                        <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/50 text-red-200 text-sm">
+                            {error}
+                        </div>
+                    )}
+                    {success && (
+                        <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/50 text-green-200 text-sm">
+                            {success}
+                        </div>
+                    )}
+                    
                     <p className="text-center text-gray-300">Mật khẩu mới của bạn phải khác với mật khẩu đã sử dụng trước đó.</p>
-                    <input type="password" placeholder="Mật khẩu mới" className="w-full p-3 rounded-lg form-input" />
-                    <input type="password" placeholder="Nhập lại mật khẩu mới" className="w-full p-3 rounded-lg form-input" />
-                    <button className="w-full p-3 rounded-lg font-bold form-button">Đặt Lại Mật Khẩu</button>
-                        <p className="text-center text-gray-300 text-sm"><a href="./login.html" className="font-semibold form-link transition">Quay lại Đăng nhập</a></p>
-                </div>
+                    
+                    <input 
+                        type="password" 
+                        placeholder="Mật khẩu mới" 
+                        className="w-full p-3 rounded-lg form-input" 
+                        value={formData.password}
+                        onChange={(e) => handleInputChange('password', e.target.value)}
+                        disabled={isLoading}
+                        required
+                    />
+                    
+                    <input 
+                        type="password" 
+                        placeholder="Nhập lại mật khẩu mới" 
+                        className="w-full p-3 rounded-lg form-input" 
+                        value={formData.confirmPassword}
+                        onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                        disabled={isLoading}
+                        required
+                    />
+                    
+                    <button 
+                        type="submit" 
+                        className="w-full p-3 rounded-lg font-bold form-button disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Đang đặt lại...' : 'Đặt Lại Mật Khẩu'}
+                    </button>
+                    
+                    <p className="text-center text-gray-300 text-sm">
+                        <a href="/login" className="font-semibold form-link transition">Quay lại Đăng nhập</a>
+                    </p>
+                </form>
             </div>
         </>
     );

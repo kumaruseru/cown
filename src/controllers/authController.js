@@ -113,20 +113,31 @@ class AuthController {
             req.session.userId = result.user.id;
             req.session.sessionId = result.sessionId;
             req.session.maxAge = sessionDuration;
+            
+            console.log('Login: Set session userId:', req.session.userId, 'sessionId:', req.session.sessionId);
 
-            res.json({
-                success: true,
-                message: 'Login successful',
-                data: {
-                    user: {
-                        id: result.user.id,
-                        firstName: result.user.firstName,
-                        lastName: result.user.lastName,
-                        email: result.user.email,
-                        profile: result.user.profile
-                    },
-                    sessionId: result.sessionId
+            // Force session save
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Session save error:', err);
+                } else {
+                    console.log('Session saved successfully');
                 }
+                
+                res.json({
+                    success: true,
+                    message: 'Login successful',
+                    data: {
+                        user: {
+                            id: result.user.id,
+                            firstName: result.user.firstName,
+                            lastName: result.user.lastName,
+                            email: result.user.email,
+                            profile: result.user.profile
+                        },
+                        sessionId: result.sessionId
+                    }
+                });
             });
 
         } catch (error) {

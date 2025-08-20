@@ -14,16 +14,61 @@ class DatabaseManager {
 
   // Initialize all database connections
   async initialize() {
+    const results = {
+      mysql: false,
+      mongodb: false,
+      redis: false,
+      neo4j: false
+    };
+
+    console.log('📊 Attempting to connect to databases...');
+
+    // Try MySQL
     try {
       await this.initMySQL();
-      await this.initMongoDB();
-      await this.initRedis();
-      await this.initNeo4j();
-      console.log('✅ All databases connected successfully');
+      results.mysql = true;
     } catch (error) {
-      console.error('❌ Database initialization failed:', error);
-      throw error;
+      console.warn('⚠️ MySQL connection failed:', error.message);
+      console.log('   Continuing without MySQL...');
     }
+
+    // Try MongoDB
+    try {
+      await this.initMongoDB();
+      results.mongodb = true;
+    } catch (error) {
+      console.warn('⚠️ MongoDB connection failed:', error.message);
+      console.log('   Continuing without MongoDB...');
+    }
+
+    // Try Redis
+    try {
+      await this.initRedis();
+      results.redis = true;
+    } catch (error) {
+      console.warn('⚠️ Redis connection failed:', error.message);
+      console.log('   Continuing without Redis...');
+    }
+
+    // Try Neo4j
+    try {
+      await this.initNeo4j();
+      results.neo4j = true;
+    } catch (error) {
+      console.warn('⚠️ Neo4j connection failed:', error.message);
+      console.log('   Continuing without Neo4j...');
+    }
+
+    const connectedCount = Object.values(results).filter(Boolean).length;
+    console.log(`📊 Database Status: ${connectedCount}/4 connected`);
+    
+    if (connectedCount === 0) {
+      console.warn('⚠️ No databases connected - running in offline mode');
+    } else {
+      console.log('✅ Some databases connected - partial functionality available');
+    }
+
+    return results;
   }
 
   // MySQL Connection

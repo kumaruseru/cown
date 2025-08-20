@@ -1,3 +1,68 @@
+// Debug: Check if React is available
+console.log('🔍 login.js loading...');
+console.log('React available:', typeof React !== 'undefined');
+console.log('ReactDOM available:', typeof ReactDOM !== 'undefined');
+
+// Main initialization function
+function initializeApp() {
+    // Simple fallback if React is not available
+    if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+        console.error('❌ React or ReactDOM not available, showing fallback');
+        document.getElementById('root').innerHTML = `
+            <div style="
+                display: flex; 
+                flex-direction: column; 
+                align-items: center; 
+                justify-content: center; 
+                height: 100vh; 
+                background: linear-gradient(135deg, #0c1445 0%, #1a1a3a 100%);
+                color: white;
+                font-family: 'Inter', sans-serif;
+                text-align: center;
+            ">
+                <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: #00BFFF;">COWN1</h1>
+                <h2 style="font-size: 1.5rem; margin-bottom: 2rem;">Cosmic Edition</h2>
+                <form style="
+                    background: rgba(255,255,255,0.1); 
+                    padding: 2rem; 
+                    border-radius: 10px; 
+                    backdrop-filter: blur(10px);
+                    width: 300px;
+                ">
+                    <input type="email" placeholder="Email" style="
+                        width: 100%; 
+                        padding: 12px; 
+                        margin-bottom: 1rem; 
+                        border: none; 
+                        border-radius: 5px; 
+                        background: rgba(255,255,255,0.2);
+                        color: white;
+                    " />
+                    <input type="password" placeholder="Password" style="
+                        width: 100%; 
+                        padding: 12px; 
+                        margin-bottom: 1rem; 
+                        border: none; 
+                        border-radius: 5px; 
+                        background: rgba(255,255,255,0.2);
+                        color: white;
+                    " />
+                    <button type="submit" style="
+                        width: 100%; 
+                        padding: 12px; 
+                        background: linear-gradient(45deg, #00BFFF, #0080FF); 
+                        border: none; 
+                        border-radius: 5px; 
+                        color: white; 
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Đăng nhập</button>
+                </form>
+            </div>
+        `;
+        return;
+    }
+
 // --- Three.js Scene Component ---
 const ThreeScene = () => {
     const mountRef = React.useRef(null);
@@ -191,6 +256,7 @@ const App = () => {
                     'Content-Type': 'application/json',
                     'X-MTProto-Encrypted': 'true'
                 },
+                credentials: 'include', // Include cookies for session
                 body: JSON.stringify({
                     email: formData.email,
                     password: formData.password,
@@ -209,8 +275,8 @@ const App = () => {
                 sessionStorage.setItem('sessionId', data.data.sessionId);
             }
 
-            // Redirect to dashboard after successful login
-            window.location.href = '/messages.html';
+            // Redirect to home page after successful login
+            window.location.href = '/';
 
         } catch (error) {
             console.error('Login error:', error);
@@ -266,7 +332,7 @@ const App = () => {
                                     />
                                     Ghi nhớ tôi
                                 </label>
-                                <a href="forgot-password.html" className="form-link transition">Quên mật khẩu?</a>
+                                <a href="/forgot-password" className="form-link transition">Quên mật khẩu?</a>
                             </div>
                             <button 
                                 type="submit" 
@@ -275,7 +341,7 @@ const App = () => {
                             >
                                 {isLoading ? 'Đang đăng nhập...' : 'Đăng Nhập'}
                             </button>
-                            <p className="text-center text-gray-300 text-sm">Chưa có tài khoản? <a href="register.html" className="font-semibold form-link transition">Đăng ký miễn phí</a></p>
+                            <p className="text-center text-gray-300 text-sm">Chưa có tài khoản? <a href="/register" className="font-semibold form-link transition">Đăng ký miễn phí</a></p>
                         </div>
                     </form>
 
@@ -301,5 +367,31 @@ const App = () => {
     );
 };
 
-// Render the React app to the DOM
-ReactDOM.render(<App />, document.getElementById('root'));
+// Render the React app to the DOM using legacy API for better compatibility
+console.log('🚀 Attempting to render React app...');
+
+// Safety check
+if (typeof React === 'undefined') {
+    console.error('❌ React is not loaded!');
+    document.getElementById('root').innerHTML = '<div style="color: red; text-align: center; padding: 50px;">React library failed to load. Please refresh the page.</div>';
+} else if (typeof ReactDOM === 'undefined') {
+    console.error('❌ ReactDOM is not loaded!');
+    document.getElementById('root').innerHTML = '<div style="color: red; text-align: center; padding: 50px;">ReactDOM library failed to load. Please refresh the page.</div>';
+} else {
+    try {
+        ReactDOM.render(<App />, document.getElementById('root'));
+        console.log('✅ React app rendered successfully!');
+    } catch (error) {
+        console.error('❌ Error rendering React app:', error);
+        document.getElementById('root').innerHTML = '<div style="color: red; text-align: center; padding: 50px;">Error rendering app: ' + error.message + '</div>';
+    }
+}
+
+} // End of initializeApp function
+
+// Initialize the app when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}

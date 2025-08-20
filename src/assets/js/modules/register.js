@@ -248,6 +248,7 @@ const App = () => {
                     'Content-Type': 'application/json',
                     'X-MTProto-Encrypted': 'true'
                 },
+                credentials: 'include', // Include cookies for session
                 body: JSON.stringify({
                     firstName: formData.firstName,
                     lastName: formData.lastName,
@@ -266,9 +267,9 @@ const App = () => {
 
             setSuccess('Đăng ký thành công! Đang chuyển hướng...');
             
-            // Redirect to login or dashboard after successful registration
+            // Redirect to login after successful registration
             setTimeout(() => {
-                window.location.href = '/login.html';
+                window.location.href = '/login';
             }, 2000);
 
         } catch (error) {
@@ -295,8 +296,8 @@ const App = () => {
                     <h1 className="text-3xl font-bold text-white">Khởi Tạo Hành Trình</h1>
                     <p className="text-gray-300">Gia nhập vào vũ trụ của chúng tôi</p>
                 </div>
-                <div className="w-full space-y-4">
-                    <form onSubmit={handleSubmit}>
+                <div id="register-form" className="w-full space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         {error && (
                             <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/50 text-red-200 text-sm">
                                 {error}
@@ -307,6 +308,8 @@ const App = () => {
                                 {success}
                             </div>
                         )}
+                        
+                        {/* Họ và Tên */}
                         <div className="flex flex-col sm:flex-row gap-4">
                             <input 
                                 type="text" 
@@ -327,6 +330,8 @@ const App = () => {
                                 required
                             />
                         </div>
+                        
+                        {/* Ngày sinh */}
                         <div>
                             <label className="text-sm text-gray-400 mb-1 block">Ngày sinh</label>
                             <div className="flex gap-2 sm:gap-4">
@@ -335,10 +340,14 @@ const App = () => {
                                 <CustomSelect options={yearOptions} placeholder="Năm" value={formData.year} onChange={(val) => handleSelectChange('year', val)} />
                             </div>
                         </div>
+                        
+                        {/* Giới tính */}
                         <div>
                             <label className="text-sm text-gray-400 mb-1 block">Giới tính</label>
-                                <CustomSelect options={genderOptions} placeholder="Chọn giới tính" value={formData.gender} onChange={(val) => handleSelectChange('gender', val)} />
+                            <CustomSelect options={genderOptions} placeholder="Chọn giới tính" value={formData.gender} onChange={(val) => handleSelectChange('gender', val)} />
                         </div>
+                        
+                        {/* Email */}
                         <input 
                             type="email" 
                             placeholder="Nhập email của bạn" 
@@ -348,6 +357,8 @@ const App = () => {
                             disabled={isLoading}
                             required
                         />
+                        
+                        {/* Mật khẩu */}
                         <input 
                             type="password" 
                             placeholder="Tạo mật khẩu mới" 
@@ -357,6 +368,8 @@ const App = () => {
                             disabled={isLoading}
                             required
                         />
+                        
+                        {/* Xác nhận mật khẩu */}
                         <input 
                             type="password" 
                             placeholder="Nhập lại mật khẩu" 
@@ -366,14 +379,18 @@ const App = () => {
                             disabled={isLoading}
                             required
                         />
+                        
+                        {/* Nút đăng ký */}
                         <button 
                             type="submit" 
-                            className="w-full p-3 rounded-lg font-bold form-button !mt-6 disabled:opacity-50 disabled:cursor-not-allowed" 
+                            className="w-full p-3 rounded-lg font-bold form-button disabled:opacity-50 disabled:cursor-not-allowed !mt-6" 
                             disabled={isLoading}
                         >
                             {isLoading ? 'Đang tạo tài khoản...' : 'Tạo Tài Khoản'}
                         </button>
-                        <p className="text-center text-gray-300 text-sm !mt-4">Đã có tài khoản? <a href="login.html" className="font-semibold form-link transition">Đăng nhập ngay</a></p>
+                        
+                        {/* Liên kết đăng nhập */}
+                        <p className="text-center text-gray-300 text-sm !mt-4">Đã có tài khoản? <a href="/login" className="font-semibold form-link transition">Đăng nhập ngay</a></p>
                     </form>
                 </div>
             </div>

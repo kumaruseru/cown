@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Custom Stylesheet -->
-    <link rel="stylesheet" href="../../assets/css/pages/login.css">
+    <link rel="stylesheet" href="/assets/css/pages/login.css">
 </head>
 <body>
     <!-- Canvas for 3D background -->
@@ -23,15 +23,35 @@
     <!-- React root element -->
     <div id="root" class="relative w-full h-screen flex items-center justify-center p-4"></div>
 
-    <!-- React and Babel for runtime JSX transformation -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react.dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- React and Babel - Using consistent React 17 versions -->
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.23.4/babel.min.js"></script>
 
     <!-- 3D library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
+    <!-- Debug script to check if libraries are loaded -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('=== Library Status ===');
+            console.log('React:', typeof React !== 'undefined' ? '✅ Loaded' : '❌ Missing');
+            console.log('ReactDOM:', typeof ReactDOM !== 'undefined' ? '✅ Loaded' : '❌ Missing');
+            console.log('Babel:', typeof Babel !== 'undefined' ? '✅ Loaded' : '❌ Missing');
+            console.log('THREE:', typeof THREE !== 'undefined' ? '✅ Loaded' : '❌ Missing');
+            
+            // Check React hooks
+            if (typeof React !== 'undefined' && React.useState) {
+                console.log('React hooks:', '✅ Available');
+                console.log('React version:', React.version);
+            } else {
+                console.log('React hooks:', '❌ Not available');
+            }
+            console.log('======================');
+        });
+    </script>
+
     <!-- Application script (must have type="text/babel") -->
-    <script type="text/babel" data-type="module" src="../../assets/js/modules/login.js"></script>
+    <script type="text/babel" data-type="module" src="/assets/js/modules/login.js"></script>
 </body>
 </html>

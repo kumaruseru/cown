@@ -1,49 +1,49 @@
 const express = require('express');
 const router = express.Router();
 const MessageController = require('../controllers/messageController');
-const authMiddleware = require('../middlewares/authMiddleware');
-const upload = require('../middlewares/uploadMiddleware');
+const { requireAuth } = require('../middlewares/authMiddleware');
+const { single } = require('../middlewares/uploadMiddleware');
 
 // Get conversations list
-router.get('/conversations', authMiddleware, MessageController.getConversations);
+router.get('/conversations', requireAuth, MessageController.getConversations);
 
 // Get messages in a conversation
-router.get('/conversations/:conversationId', authMiddleware, MessageController.getMessages);
+router.get('/conversations/:conversationId', requireAuth, MessageController.getMessages);
 
 // Send a message
-router.post('/send', authMiddleware, MessageController.sendMessage);
+router.post('/send', requireAuth, MessageController.sendMessage);
 
 // Send message with file attachment
-router.post('/send/attachment', authMiddleware, upload.single('file'), MessageController.sendMessageWithAttachment);
+router.post('/send/attachment', requireAuth, single('file'), MessageController.sendMessageWithAttachment);
 
 // Mark message as read
-router.put('/:messageId/read', authMiddleware, MessageController.markAsRead);
+router.put('/:messageId/read', requireAuth, MessageController.markAsRead);
 
 // Delete message
-router.delete('/:messageId', authMiddleware, MessageController.deleteMessage);
+router.delete('/:messageId', requireAuth, MessageController.deleteMessage);
 
 // Edit message
-router.put('/:messageId', authMiddleware, MessageController.editMessage);
+router.put('/:messageId', requireAuth, MessageController.editMessage);
 
 // Search messages
-router.get('/search/:query', authMiddleware, MessageController.searchMessages);
+router.get('/search/:query', requireAuth, MessageController.searchMessages);
 
 // Get unread messages count
-router.get('/unread/count', authMiddleware, MessageController.getUnreadCount);
+router.get('/unread/count', requireAuth, MessageController.getUnreadCount);
 
 // Create group conversation
-router.post('/group/create', authMiddleware, MessageController.createGroupConversation);
+router.post('/group/create', requireAuth, MessageController.createGroupConversation);
 
 // Add member to group
-router.post('/group/:conversationId/members', authMiddleware, MessageController.addGroupMember);
+router.post('/group/:conversationId/members', requireAuth, MessageController.addGroupMember);
 
 // Remove member from group
-router.delete('/group/:conversationId/members/:userId', authMiddleware, MessageController.removeGroupMember);
+router.delete('/group/:conversationId/members/:userId', requireAuth, MessageController.removeGroupMember);
 
 // Leave group
-router.post('/group/:conversationId/leave', authMiddleware, MessageController.leaveGroup);
+router.post('/group/:conversationId/leave', requireAuth, MessageController.leaveGroup);
 
 // Get message history
-router.get('/history/:conversationId', authMiddleware, MessageController.getMessageHistory);
+router.get('/history/:conversationId', requireAuth, MessageController.getMessageHistory);
 
 module.exports = router;

@@ -151,6 +151,54 @@ const GalaxyIcon = () => (
 
 // Main App Component
 const App = () => {
+    const [email, setEmail] = React.useState('');
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [error, setError] = React.useState('');
+    const [success, setSuccess] = React.useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            if (!email) {
+                throw new Error('Vui lòng nhập email của bạn');
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                throw new Error('Email không hợp lệ');
+            }
+
+            // Send forgot password request
+            const response = await fetch('/api/auth/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-MTProto-Encrypted': 'true'
+                },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Có lỗi xảy ra');
+            }
+
+            setSuccess('Liên kết khôi phục mật khẩu đã được gửi đến email của bạn!');
+            
+        } catch (error) {
+            console.error('Forgot password error:', error);
+            setError(error.message || 'Có lỗi xảy ra trong quá trình gửi email');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <>
             <ThreeScene />
@@ -160,12 +208,43 @@ const App = () => {
                     <h1 className="text-3xl font-bold text-white">Khôi Phục Tín Hiệu</h1>
                     <p className="text-gray-300">Lấy lại quyền truy cập vào thiên hà</p>
                 </div>
-                <div className="w-full space-y-6">
+                
+                <form onSubmit={handleSubmit} className="w-full space-y-6">
+                    {error && (
+                        <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/50 text-red-200 text-sm">
+                            {error}
+                        </div>
+                    )}
+                    {success && (
+                        <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/50 text-green-200 text-sm">
+                            {success}
+                        </div>
+                    )}
+                    
                     <p className="text-center text-gray-300">Nhập email để chúng tôi gửi liên kết khôi phục mật khẩu.</p>
-                    <input type="email" placeholder="Nhập email của bạn" className="w-full p-3 rounded-lg form-input" />
-                    <a href="./reset-password.html" className="block w-full p-3 rounded-lg font-bold form-button text-center">Gửi Liên Kết</a>
-                    <p className="text-center text-gray-300 text-sm"><a href="./login.html" className="font-semibold form-link transition">Quay lại Đăng nhập</a></p>
-                </div>
+                    
+                    <input 
+                        type="email" 
+                        placeholder="Nhập email của bạn" 
+                        className="w-full p-3 rounded-lg form-input" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={isLoading}
+                        required
+                    />
+                    
+                    <button 
+                        type="submit" 
+                        className="block w-full p-3 rounded-lg font-bold form-button text-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Đang gửi...' : 'Gửi Liên Kết'}
+                    </button>
+                    
+                    <p className="text-center text-gray-300 text-sm">
+                        <a href="/login" className="font-semibold form-link transition">Quay lại Đăng nhập</a>
+                    </p>
+                </form>
             </div>
         </>
     );

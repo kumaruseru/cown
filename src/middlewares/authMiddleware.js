@@ -5,6 +5,46 @@
 const authService = require('../services/authService');
 
 /**
+ * Middleware to check if user is authenticated for HTML pages
+ * Redirects to login page if not authenticated
+ */
+const requireAuthHTML = async (req, res, next) => {
+    try {
+        const userId = req.session.userId;
+        const sessionId = req.session.sessionId;
+        
+        console.log('AuthMiddleware: Check session userId:', userId, 'sessionId:', sessionId);
+
+        if (!userId || !sessionId) {
+            console.log('AuthMiddleware: No session, redirecting to login');
+            return res.redirect('/login');
+        }
+
+        // Verify session exists in Redis cache
+        const sessionExists = await authService.verifySession(userId, sessionId);
+        console.log('AuthMiddleware: Session verified:', sessionExists);
+        
+        if (!sessionExists) {
+            // Clear invalid session
+            console.log('AuthMiddleware: Invalid session, destroying and redirecting');
+            req.session.destroy();
+            return res.redirect('/login');
+        }
+
+        // Add user info to request object
+        req.user = { id: userId };
+        req.userId = userId;
+        req.sessionId = sessionId;
+        
+        next();
+
+    } catch (error) {
+        console.error('Auth middleware error:', error);
+        return res.redirect('/login');
+    }
+};
+
+/**
  * Middleware to check if user is authenticated
  */
 const requireAuth = async (req, res, next) => {
@@ -35,6 +75,7 @@ const requireAuth = async (req, res, next) => {
         }
 
         // Add user info to request object
+        req.user = { id: userId };
         req.userId = userId;
         req.sessionId = sessionId;
         
@@ -58,7 +99,7 @@ const requireGuest = (req, res, next) => {
     const userId = req.session.userId;
 
     if (userId) {
-        return res.redirect('/dashboard'); // or return JSON for API
+        return res.redirect('/messages'); // Redirect to messages page instead of dashboard
     }
 
     next();
@@ -196,6 +237,7 @@ const handleMTProtoHeaders = (req, res, next) => {
 
 module.exports = {
     requireAuth,
+    requireAuthHTML,
     requireGuest,
     validateMTProtoSession,
     requireRole,
